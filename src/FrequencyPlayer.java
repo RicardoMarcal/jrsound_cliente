@@ -28,7 +28,7 @@ public class FrequencyPlayer {
         return output;
     }
 
-    public void tocarNota(float nota, int tempo){
+    public void playNote(float nota, int tempo){
         byte [] toneBuffer = createSinWaveBuffer(nota, tempo);
         this.line.write(toneBuffer, 0, toneBuffer.length);
     }
