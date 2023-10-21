@@ -4,6 +4,9 @@ import java.util.Arrays;
 
 public class JRMIDecoder {
     private final FrequencyPlayer frequency;
+    private String titulo = "";
+    private String autor = "";
+    private String descricao = "";
 
     public JRMIDecoder() throws LineUnavailableException {
         this.frequency = new FrequencyPlayer();
@@ -13,13 +16,22 @@ public class JRMIDecoder {
         String rawScript = mensagem.replace("\n", "").replace("\r", "");
         String[] commands = rawScript.split("\\|>");
         for (String command: commands) {
-            String[] commandParts = command.replace(";", "").split(" ");
+            String[] commandParts = command.trim().replace(";", "").split(" ");
             execute(commandParts[0], Arrays.copyOfRange(commandParts, 1, commandParts.length));
         }
     }
 
     public void execute(String mensagem, String[] params) {
         switch (mensagem.toLowerCase()) {
+            case "titulo":
+                titulo(params);
+                break;
+            case "autor":
+                autor(params);
+                break;
+            case "desc":
+                descricao(params);
+                break;
             case "c":
                 tocarNota(Notas.C, params);
                 break;
@@ -57,14 +69,37 @@ public class JRMIDecoder {
                 tocarNota(Notas.B, params);
                 break;
             case "x":
-                tocarNota(Notas.X, params);
+                pausa(params);
                 break;
         }
+    }
+
+    private void titulo(String[] params){
+        String temp = String.join(" ", params);
+        titulo = temp;
+        System.out.println("Título: " + titulo);
+    }
+
+    private void autor(String[] params){
+        String temp = String.join(" ", params);
+        autor = temp;
+        System.out.println("Autor: " + autor);
+    }
+
+    private void descricao(String[] params){
+        String temp = String.join(" ", params);
+        descricao = temp;
+        System.out.println("Descrição: " + descricao);
     }
 
     private void tocarNota(float nota, String[] params){
         int octave = Integer.parseInt(params[0]);
         int time = Integer.parseInt(params[1]);
         frequency.playNote(Notas.getNota(nota, octave), time);
+    }
+
+    private void pausa(String[] params){
+        int time = Integer.parseInt(params[0]);
+        frequency.playNote(Notas.X, time);
     }
 }

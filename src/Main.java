@@ -4,7 +4,14 @@ import java.net.Socket;
 import java.util.Scanner;
 
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws LineUnavailableException, IOException {
+        new JRMIDecoder().decode("|>TITULO teste titulo;" +
+                "|>AUTOR teste autor; |>DESC teste descricao;" +
+                "|>G 5 800;\n" +
+                "|>F 5 800;\n" +
+                "|>E 5 400;\n" +
+                "|>E 5 200;");
+
         try {
             Socket cliente = new Socket("127.0.0.1", 1122);
             System.out.println("O cliente se conectou ao servidor!");
