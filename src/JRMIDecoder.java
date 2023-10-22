@@ -3,13 +3,13 @@ import java.io.IOException;
 import java.util.Arrays;
 
 public class JRMIDecoder {
-    private final FrequencyPlayer frequency;
+    private final FrequencyPlayer fp;
     private String titulo = "";
     private String autor = "";
     private String descricao = "";
 
     public JRMIDecoder() throws LineUnavailableException {
-        this.frequency = new FrequencyPlayer();
+        this.fp = new FrequencyPlayer();
     }
 
     public void decode(String mensagem) throws IOException {
@@ -95,11 +95,11 @@ public class JRMIDecoder {
     private void tocarNota(float nota, String[] params){
         int octave = Integer.parseInt(params[0]);
         int time = Integer.parseInt(params[1]);
-        frequency.playNote(Notas.getNota(nota, octave), time);
+        fp.playNote(Notas.getNota(nota, octave), time);
     }
 
     private void pausa(String[] params){
         int time = Integer.parseInt(params[0]);
-        frequency.playNote(Notas.X, time);
+        fp.playNote(Notas.X, time);
     }
 }
