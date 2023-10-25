@@ -102,4 +102,8 @@ public class JRMIDecoder {
         int time = Integer.parseInt(params[0]);
         frequency.playNote(Notas.X, time);
     }
+
+    public void fechar(){
+        frequency.close();
+    }
 }

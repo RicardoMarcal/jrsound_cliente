@@ -1,39 +1,67 @@
+import javax.sound.sampled.LineUnavailableException;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.Socket;
+import java.util.Arrays;
 
-public class JRMPDecoder {
+public class JRMPDecoder implements JRPMPnterface {
 
     private final Socket socket;
-    private final PrintStream ps;
+    private final PrintStream print;
 
     public JRMPDecoder(Socket cliente) throws IOException {
         this.socket = cliente;
-        this.ps = new PrintStream(socket.getOutputStream());
+        this.print = new PrintStream(socket.getOutputStream());
     }
 
     public void decode(String mensagem) throws IOException {
-        switch (mensagem.toLowerCase()) {
-            case "ping":
-                ping();
-                break;
-            case "pong":
-                pong();
-                break;
-            case "sair":
-                sair();
-                break;
+        String rawScript = mensagem.replace("\n", "").replace("\r", "");
+        String[] commands = rawScript.split("@\\{");
+        for (String command: commands) {
+            String[] commandParts = command.trim().replace("}", "").split(" ");
+            execute(commandParts[0], Arrays.copyOfRange(commandParts, 1, commandParts.length));
         }
     }
 
-    public void ping() {
-        ps.println("pong");
-    }
-    public void pong() {
-        System.out.println("pong");
+    public void execute(String mensagem, String[] params) throws IOException {
+        switch (mensagem.toLowerCase()) {
+            case "tocar" -> tocar(params);
+            case "reproduzir" -> reproduzir(params);
+            case "listar" -> listar(params);
+            case "enviar" -> enviar(params);
+            case "sair" -> sair(params);
+        }
     }
 
-    public void sair() throws IOException {
+    @Override
+    public void tocar(String[] params) {
+
+    }
+
+    @Override
+    public void reproduzir(String[] params) {
+        JRMIDecoder dec = null;
+        try {
+            dec = new JRMIDecoder();
+            dec.decode(String.join(" ", params));
+            dec.fechar();
+        } catch (LineUnavailableException | IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void listar(String[] params) {
+
+    }
+
+    @Override
+    public void enviar(String[] params) {
+
+    }
+
+    @Override
+    public void sair(String[] params) throws IOException {
         socket.close();
     }
 }
