@@ -7,11 +7,11 @@ import java.util.Arrays;
 public class JRMPDecoder implements JRPMPnterface {
 
     private final Socket socket;
-    private final PrintStream print;
+    private final PrintStream ps;
 
     public JRMPDecoder(Socket cliente) throws IOException {
         this.socket = cliente;
-        this.print = new PrintStream(socket.getOutputStream());
+        this.ps = new PrintStream(socket.getOutputStream());
     }
 
     public void decode(String mensagem) throws IOException {
