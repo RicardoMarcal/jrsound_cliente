@@ -4,7 +4,7 @@ import java.io.PrintStream;
 import java.net.Socket;
 import java.util.Arrays;
 
-public class JRMPDecoder implements JRPMPnterface {
+public class JRMPDecoder implements JRMPInterface {
 
     private final Socket socket;
     private final PrintStream ps;
@@ -14,32 +14,29 @@ public class JRMPDecoder implements JRPMPnterface {
         this.ps = new PrintStream(socket.getOutputStream());
     }
 
+    @Override
     public void decode(String mensagem) throws IOException {
         String rawScript = mensagem.replace("\n", "").replace("\r", "");
         String[] commands = rawScript.split("@\\{");
         for (String command: commands) {
             String[] commandParts = command.trim().replace("}", "").split(" ");
+            if (commandParts[0].isEmpty())
+                continue;
             execute(commandParts[0], Arrays.copyOfRange(commandParts, 1, commandParts.length));
         }
     }
 
-    public void execute(String mensagem, String[] params) throws IOException {
+    @Override
+    public void execute(String mensagem, String[] params) {
         switch (mensagem.toLowerCase()) {
             case "tocar" -> tocar(params);
-            case "reproduzir" -> reproduzir(params);
             case "listar" -> listar(params);
-            case "enviar" -> enviar(params);
-            case "sair" -> sair(params);
+            default -> mensagemErro();
         }
     }
 
     @Override
     public void tocar(String[] params) {
-
-    }
-
-    @Override
-    public void reproduzir(String[] params) {
         JRMIDecoder dec = null;
         try {
             dec = new JRMIDecoder();
@@ -52,6 +49,15 @@ public class JRMPDecoder implements JRPMPnterface {
 
     @Override
     public void listar(String[] params) {
+        System.out.println("Lista de músicas:");
+
+        for (String musica: params) {
+            System.out.println(musica.substring(0, musica.length() - 5));
+        }
+    }
+
+    @Override
+    public void nomeMusica(String[] params) {
 
     }
 
@@ -62,6 +68,11 @@ public class JRMPDecoder implements JRPMPnterface {
 
     @Override
     public void sair(String[] params) throws IOException {
-        socket.close();
+
+    }
+
+    @Override
+    public void mensagemErro() {
+        System.out.println("Erro! Comando inválido!");
     }
 }
